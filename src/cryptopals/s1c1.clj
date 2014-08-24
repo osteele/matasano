@@ -1,8 +1,5 @@
 (ns cryptopals.s1c1)
 
-(defn read-hex [hexstr]
-  (map #(Integer/parseInt % 16) (re-seq #".." hexstr)))
-
 (def base64-index
   (letfn [(char-range [c0 c1]
                       (apply str (map #(char %) (range (int c0) (inc (int c1))))))]
@@ -25,7 +22,3 @@
    (mapcat repack)
    (map #(get base64-index %))
    (apply str)))
-
-(def test-input "49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d")
-(def test-output "SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t")
-(assert (= (base64 (read-hex test-input)) test-output))

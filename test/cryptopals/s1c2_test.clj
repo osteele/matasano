@@ -1,5 +1,6 @@
 (ns cryptopals.s1c2-test
   (:require [clojure.test :refer :all]
+            [cryptopals.utils :refer [read-hex]]
             [cryptopals.s1c2 :refer :all]))
 
 (deftest xor-buffers-test
