@@ -1,3 +1,5 @@
+(ns cryptopals.s1c1)
+
 (defn read-hex [hexstr]
   (map #(Integer/parseInt % 16) (re-seq #".." hexstr)))
 
