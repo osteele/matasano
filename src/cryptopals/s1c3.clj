@@ -1,26 +1,6 @@
 (ns cryptopals.s1c3
-  (:require [cryptopals.utils :as utils]))
-
-(defn repeating-key-xor [key buffer]
-  (map bit-xor buffer (cycle key)))
-
-(defn decode [key input]
-  (->>
-   input
-   (repeating-key-xor key)
-   (map char)
-   (apply str)))
-
-(defn ordered-key-string [seq]
-  (->>
-   seq
-   (map char)
-   (map #(Character/toUpperCase %))
-   frequencies
-   utils/sorted-map-by-value
-   keys
-   (apply str)
-   ))
+  (:require [cryptopals.utils :as utils]
+            [cryptopals.xor-cypher :as xor]))
 
 (def english-letter-freqs
   [11.602 4.702 3.511 2.670 2.007 3.779 1.950 7.232 6.286 0.597 0.590 2.705 4.374 2.365 6.264 2.545 0.173 1.653 7.775 16.671 1.487 0.649 6.753 0.017 1.620 0.034])
@@ -33,9 +13,9 @@
    (into {\space 11.7})
    utils/normalize-map))
 
-(defn score-frequencies [freqs]
+(defn- score-frequencies [coll]
   (->>
-   freqs
+   coll
    utils/normalize-map
    (map (fn [[k v]] (* (get english-char-freqs k 0) v)))
    (apply +)))
@@ -47,22 +27,21 @@
    frequencies
    score-frequencies))
 
-(defn score-for-key [key input]
+(defn- score-for-key [k s]
   (->>
-   (decode key input)
+   (xor/decode k s)
    string-score
    ))
 
-(defn sorted-keys [input]
-  (let [keys (map list (range 255))
-        scored-keys (map #(with-meta % {:score (score-for-key % input)}) keys)
-        sorted-keys (sort-by (comp :score meta) > scored-keys)
-        ]
-    sorted-keys))
+(defn- sorted-keys [s]
+  (->>
+   (map list (range 255))
+   (map #(with-meta % {:score (score-for-key % s)}))
+   (sort-by (comp :score meta) >)))
 
-(defn find-best-key [input]
-  (first (sorted-keys input)))
+(defn find-best-key [s]
+  (first (sorted-keys s)))
 
-(defn best-decoding [input]
-  (let [key (find-best-key input)]
-    (decode key input)))
+(defn best-decoding [s]
+  (let [k (find-best-key s)]
+    (xor/decode k s)))

@@ -1,12 +1,12 @@
-(ns cryptopals.s1c1
+(ns cryptopals.base64
   (:require [clojure.string :as string]))
 
-(def base64-index
+(def ^:private base64-index
   (letfn [(char-range [c0 c1]
                       (string/join (map char (range (int c0) (inc (int c1))))))]
     (str (char-range \A \Z) (char-range \a \z) (char-range \0 \9) "+/")))
 
-(defn repack [xs]
+(defn- repack [xs]
   (->>
    (map (fn [a b i]
           (bit-or (bit-shift-left a (- 8 i)) (bit-shift-right b i)))
@@ -16,9 +16,9 @@
    (map #(bit-and 63 %))
    ))
 
-(defn base64 [seq]
+(defn base64-decode [^String encoded]
   (->>
-   seq
+   encoded
    (partition 3)
    (mapcat repack)
    (map #(get base64-index %))
