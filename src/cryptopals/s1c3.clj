@@ -4,6 +4,13 @@
 (defn repeating-key-xor [key buffer]
   (map bit-xor buffer (cycle key)))
 
+(defn decode [key input]
+  (->>
+   input
+   (repeating-key-xor key)
+   (map char)
+   (apply str)))
+
 (defn ordered-key-string [seq]
   (->>
    seq
@@ -43,15 +50,16 @@
    score-frequencies
    ))
 
-(defn find-best-key [input]
-  (let [scored-keys
-        (for [k (map list (range 255))] [k (score-for-key k input)])]
-    (ffirst (sort-by second > scored-keys))))
+(defn sorted-keys [input]
+  (let [keys (map list (range 255))
+        scored-keys (map #(with-meta % {:score (score-for-key % input)}) keys)
+        sorted-keys (sort-by (comp :score meta) > scored-keys)
+        ]
+    sorted-keys))
 
-(defn decode [input]
+(defn find-best-key [input]
+  (first (sorted-keys input)))
+
+(defn best-decoding [input]
   (let [key (find-best-key input)]
-    (->>
-     input
-     (repeating-key-xor key)
-     (map char)
-     (apply str))))
+    (decode key input)))

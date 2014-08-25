@@ -1,8 +1,9 @@
-(ns cryptopals.s1c1)
+(ns cryptopals.s1c1
+  (:require [clojure.string :as string]))
 
 (def base64-index
   (letfn [(char-range [c0 c1]
-                      (apply str (map #(char %) (range (int c0) (inc (int c1))))))]
+                      (string/join (map char (range (int c0) (inc (int c1))))))]
     (str (char-range \A \Z) (char-range \a \z) (char-range \0 \9) "+/")))
 
 (defn repack [xs]
