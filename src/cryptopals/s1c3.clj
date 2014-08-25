@@ -40,14 +40,17 @@
    (map (fn [[k v]] (* (get english-char-freqs k 0) v)))
    (apply +)))
 
+(defn string-score [s]
+  (->>
+   s
+   clojure.string/upper-case
+   frequencies
+   score-frequencies))
+
 (defn score-for-key [key input]
   (->>
-   input
-   (repeating-key-xor key)
-   (map char)
-   (map #(Character/toUpperCase %))
-   frequencies
-   score-frequencies
+   (decode key input)
+   string-score
    ))
 
 (defn sorted-keys [input]
