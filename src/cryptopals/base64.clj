@@ -1,25 +1,50 @@
 (ns cryptopals.base64
   (:require [clojure.string :as string]))
 
-(def ^:private base64-index
+(def ^:private char-encodings
   (letfn [(char-range [c0 c1]
                       (string/join (map char (range (int c0) (inc (int c1))))))]
-    (str (char-range \A \Z) (char-range \a \z) (char-range \0 \9) "+/")))
+    (str
+     (char-range \A \Z)
+     (char-range \a \z)
+     (char-range \0 \9)
+     "+/")))
 
-(defn- repack [xs]
+(def ^:private char->int-map
+  (zipmap char-encodings (range (count char-encodings))))
+
+(defn- octets->sextets [xs]
   (->>
    (map (fn [a b i]
           (bit-or (bit-shift-left a (- 8 i)) (bit-shift-right b i)))
-        (concat '(0) xs)
-        (concat xs '(0))
-        '(2 4 6 8))
-   (map #(bit-and 63 %))
-   ))
+        (concat [0] xs)
+        (concat xs [0])
+        [2 4 6 8])
+   (map #(bit-and 63 %))))
 
-(defn base64-decode [^String encoded]
+(defn- sextets->octets [xs]
   (->>
-   encoded
+   (map (fn [a b i]
+          (bit-or (bit-shift-left a i) (bit-shift-right b (- 6 i))))
+        xs
+        (rest xs)
+        [2 4 6])
+   (map #(bit-and 255 %))))
+
+(defn encode [s]
+  (assert (zero? (mod (count s) 3)))
+  (->>
+   s
    (partition 3)
-   (mapcat repack)
-   (map #(get base64-index %))
+   (mapcat octets->sextets)
+   (map #(nth char-encodings %))
    (apply str)))
+
+(defn decode [s]
+  (assert (zero? (mod (count s) 4)))
+  (->>
+   s
+   (map char->int-map)
+   (partition 4)
+   (mapcat sextets->octets)
+   ))
