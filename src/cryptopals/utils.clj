@@ -9,6 +9,9 @@
                                   [(get coll k1) k1])))
         coll))
 
+(defn avg [xs]
+  (/ (reduce + 0 xs) (count xs)))
+
 (defn map-keys [f coll]
   (into {} (for [[k v] coll] [(f k) v])))
 

@@ -11,7 +11,8 @@
      "+/")))
 
 (def ^:private char->int-map
-  (zipmap char-encodings (range (count char-encodings))))
+  (assoc (zipmap char-encodings (range (count char-encodings)))
+    \= 0))
 
 (defn- octets->sextets [xs]
   (->>
@@ -45,6 +46,8 @@
   (->>
    s
    (map char->int-map)
+   ;(map assert)
    (partition 4)
    (mapcat sextets->octets)
+   (apply vector)
    ))

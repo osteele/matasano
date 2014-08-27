@@ -13,35 +13,38 @@
    (into {\space 11.7})
    utils/normalize-map))
 
-(defn- score-frequencies [coll]
+(defn- score-frequencies [input]
   (->>
-   coll
+   input
    utils/normalize-map
    (map (fn [[k v]] (* (get english-char-freqs k 0) v)))
    (apply +)))
 
-(defn string-score [s]
+(defn string-score [input]
   (->>
-   s
+   input
    clojure.string/upper-case
    frequencies
    score-frequencies))
 
-(defn- score-for-key [k s]
+(defn- score-for-key [k input]
   (->>
-   (xor/decode k s)
+   (xor/decode k input)
    string-score
    ))
 
-(defn- sorted-keys [s]
+(defn- sorted-keys [input]
   (->>
    (map list (range 255))
-   (map #(with-meta % {:score (score-for-key % s)}))
+   (map #(with-meta % {:score (score-for-key % input)}))
    (sort-by (comp :score meta) >)))
 
-(defn find-best-key [s]
-  (first (sorted-keys s)))
+(defn find-best-key [input]
+  (apply max-key #(score-for-key [%] input) (range 256)))
 
-(defn best-decoding [s]
-  (let [k (find-best-key s)]
-    (xor/decode k s)))
+(defn decodings [input]
+  (map #(xor/decode % input) (sorted-keys input)))
+
+(defn best-decoding [input]
+  (xor/decode (first (sorted-keys input)) input))
+
