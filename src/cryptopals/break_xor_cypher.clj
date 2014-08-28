@@ -7,7 +7,7 @@
 
 (defn bit-count [n]
   (let [i0 (int n)
-        i1 (- n (bit-and (bit-shift-right n 1) 0x55555555))
+        i1 (- i0 (bit-and (bit-shift-right i0 1) 0x55555555))
         i2 (+ (bit-and i1 0x33333333) (bit-and (bit-shift-right i1 2) 0x33333333))
         i3 (bit-shift-right (* (bit-and (+ i2 (bit-shift-right i2 4)) 0x0F0F0F0F) 0x01010101) 24)
         ]
@@ -25,12 +25,12 @@
     (/ (string-hamming-distance h1 h2) (float keysize))))
 
 (defn hamming-distance-for-keysize [input keysize]
-  (let [chunks (filter #(= (count %) keysize) (partition keysize input))
-        ;chunk-count (max 5 (int (/ 20 keysize)))
-        chunk-count 10
+  (let [blocks (filter #(= (count %) keysize) (partition keysize input))
+        ;block-count (max 5 (int (/ 20 keysize)))
+        block-count 10
         ]
-    (/ (avg (map #(string-hamming-distance (first chunks) %)
-                 (take chunk-count (rest chunks))))
+    (/ (avg (map #(string-hamming-distance (first blocks) %)
+                 (take block-count (rest blocks))))
        (float keysize))))
 
 (defn detect-xor-keysize [input]
@@ -43,9 +43,7 @@
       (map #(% i) chunks))))
 
 (defn find-xor-key [input]
-  (let [max-keysize 40
-        keysize (detect-xor-keysize input)
-        ]
+  (let [keysize (detect-xor-keysize input)]
     (->>
      (subvec input 0 (* keysize (int (/ (count input) keysize))))
      (transpose keysize)
