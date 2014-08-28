@@ -1,4 +1,4 @@
-# matasano
+# matasano [![Build Status](https://secure.travis-ci.org/osteele/matasano.png?branch=master)](http://travis-ci.org/osteele/matasano)
 
 Work-in-progress solutions to the [Matasano Crypto Challenges][cryptopals].
 
