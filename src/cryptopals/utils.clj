@@ -1,14 +1,23 @@
 (ns cryptopals.utils)
 
+; sequences
+
 (defn avg [coll]
   (/ (reduce + coll)
      (count coll)))
+
+(defn transpose [coll]
+  (apply mapv vector coll))
+
+; strings
 
 (defn read-hex [hexstr]
   (->>
    hexstr
    (re-seq #"..")
    (map #(Integer/parseInt % 16))))
+
+; maps
 
 (defn sorted-map-by-value [coll]
   (into (sorted-map-by (fn [k1 k2]
