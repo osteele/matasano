@@ -3,15 +3,15 @@
 (defn xor-buffers [a b]
   (map bit-xor a b))
 
-(defn encode [k text]
+(defn encode [k input]
   (->>
-   text
+   input
    (map int)
    (map bit-xor (cycle (map int k)))))
 
-(defn decode [k text]
+(defn decode [k input]
   (->>
-   text
+   input
    (encode k)
    (map char)
    (apply str)))

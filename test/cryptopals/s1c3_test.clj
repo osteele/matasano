@@ -1,7 +1,7 @@
 (ns cryptopals.s1c3-test
   (:require [clojure.test :refer :all]
             [cryptopals.utils :refer :all]
-            [cryptopals.s1c3 :refer :all]))
+            [cryptopals.break-single-char-xor :refer :all]))
 
 (deftest frequencies-test
   (is (= (count english-letter-freqs) 26))

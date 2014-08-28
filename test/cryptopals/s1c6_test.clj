@@ -3,8 +3,7 @@
             [cryptopals.break-xor-cypher :refer :all]
             [cryptopals.utils :as utils]
             [cryptopals.base64 :as base64]
-            [cryptopals.xor-cypher :as xor]
-            [cryptopals.s1c3 :refer [find-best-key best-decoding decodings] :reload true]))
+            [cryptopals.xor-cypher :as xor]))
 
 (deftest string-hamming-distance-test
   (let [s0 "this is a test"

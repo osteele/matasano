@@ -3,7 +3,7 @@
             [cryptopals.utils :refer [avg]]
             [cryptopals.base64 :as base64]
             [cryptopals.xor-cypher :as xor]
-            [cryptopals.s1c3 :as break-single-xor]))
+            [cryptopals.break-single-char-xor :as break-single-xor]))
 
 (defn bit-count [n]
   (let [i0 (int n)

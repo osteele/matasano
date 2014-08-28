@@ -1,4 +1,4 @@
-(ns cryptopals.s1c3
+(ns cryptopals.break-single-char-xor
   (:require [cryptopals.utils :as utils]
             [cryptopals.xor-cypher :as xor]))
 
