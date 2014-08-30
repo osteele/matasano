@@ -1,6 +1,6 @@
 (ns cryptopals.break-xor-cypher
   (:require [clojure.test :refer :all]
-            [cryptopals.utils :refer [avg transpose]]
+            [cryptopals.utils :refer [avg pmin-key transpose]]
             [cryptopals.xor-cypher :as xor]
             [cryptopals.break-single-char-xor :as break-single-xor]))
 
@@ -28,7 +28,7 @@
        (float keysize))))
 
 (defn detect-xor-keysize [input]
-  (apply min-key #(hamming-distance-for-keysize input %) (range 1 40)))
+  (apply min-key #(hamming-distance-for-keysize input %) (range 1 (inc 40))))
 
 (defn find-xor-key [input]
   (let [keysize (detect-xor-keysize input)]
@@ -36,7 +36,7 @@
      input
      (partition keysize)
      transpose
-     (map break-single-xor/find-best-key)
+     (pmap break-single-xor/find-best-key)
      (map char)
      (apply str))))
 

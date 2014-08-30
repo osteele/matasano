@@ -6,6 +6,22 @@
   (/ (reduce + coll)
      (count coll)))
 
+(defn psort-by
+  ([keyfn coll]
+   (psort-by keyfn compare coll))
+  ([keyfn comparefn coll]
+    (->>
+     coll
+     (pmap #(list (keyfn %) %))
+     (sort-by first comparefn)
+     (map second))))
+
+(defn pmax-key [keyfn & more]
+  (first (psort-by keyfn > more)))
+
+(defn pmin-key [keyfn & more]
+  (first (psort-by keyfn < more)))
+
 (defn transpose [coll]
   (apply mapv vector coll))
 
@@ -26,7 +42,7 @@
         coll))
 
 (defn map-keys [f coll]
-  (into {} (for [[k v] coll] [(f k) v])))
+  (zipmap (map f (keys coll)) (vals coll)))
 
 (defn normalize [coll]
   (let [sum (apply + coll)]

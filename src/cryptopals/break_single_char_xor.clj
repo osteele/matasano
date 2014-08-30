@@ -1,5 +1,6 @@
 (ns cryptopals.break-single-char-xor
   (:require [cryptopals.utils :as utils]
+            [cryptopals.utils :refer [psort-by pmax-key]]
             [cryptopals.xor-cypher :as xor]))
 
 (def english-letter-freq-vector
@@ -22,7 +23,7 @@
    utils/normalize-map-values
    (utils/map-values-dot-product english-char-freq-map)))
 
-(defn- score-for-key [k input]
+(defn- score-for-key [input k]
   (->>
    (xor/decode [k] input)
    string-score))
@@ -30,12 +31,12 @@
 (defn- sorted-keys [input]
   (->>
    (range 256)
-   (sort-by #(score-for-key % input) >)))
+   (psort-by (partial score-for-key input) >)))
 
 (defn find-best-key [input]
   (->>
    (range 256)
-   (apply max-key #(score-for-key % input) )))
+   (apply pmax-key (partial score-for-key input))))
 
 (defn decodings [input]
   (->>
