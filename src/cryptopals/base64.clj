@@ -54,11 +54,12 @@
    (apply str)))
 
 (defn decode [input]
-  (assert (zero? (mod (count input) 4)))
-  (->>
-   (clojure.string/replace input #"=+$" "")
-   (map char->int-map)
-   (partition-all 4)
-   (mapcat #(apply sextets->octets %))
-   (apply vector)
-   ))
+  (let [input (string/replace input #"\s" "")]
+    (assert (zero? (mod (count input) 4)))
+    (->>
+     (clojure.string/replace input #"=+$" "")
+     (map char->int-map)
+     (partition-all 4)
+     (mapcat #(apply sextets->octets %))
+     (apply vector)
+     )))

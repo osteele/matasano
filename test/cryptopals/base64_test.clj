@@ -42,6 +42,7 @@
 (fact
  "base64/decode should decode a string"
  (base64/decode "AAAA") => [0 0 0]
+ (base64/decode "ABCD") => [0 16 131]
  (base64/decode "BAAA") => [4 0 0]
  (base64/decode "ABAA") => [0 16 0]
  (base64/decode "AABA") => [0 0 64]
@@ -65,4 +66,11 @@
  (base64/decode "AAE=") => [0 1]
  (base64/decode "BAA=") => [4 0]
  (base64/decode "ABA=") => [0 16]
+ )
+
+(fact
+ "base64/decode should ignore whitespace"
+ (base64/decode "ABCD") => [0 16 131]
+ (base64/decode "A BCD") => [0 16 131]
+ (base64/decode "AB\nCD") => [0 16 131]
  )
