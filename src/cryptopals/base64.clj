@@ -1,4 +1,5 @@
 (ns cryptopals.base64
+  ;(:use midje.sweet)
   (:require [clojure.string :as string]))
 
 (def ^:private char-encodings
@@ -8,46 +9,56 @@
      (char-range \A \Z)
      (char-range \a \z)
      (char-range \0 \9)
-     "+/")))
+     "+/=")))
 
 (def ^:private char->int-map
   (assoc (zipmap char-encodings (range (count char-encodings)))
     \= 0))
 
-(defn- octets->sextets [xs]
-  (->>
-   (map (fn [a b i]
-          (bit-or (bit-shift-left a (- 8 i)) (bit-shift-right b i)))
-        (concat [0] xs)
-        (concat xs [0])
-        [2 4 6 8])
-   (map #(bit-and 63 %))))
+(defn- octets->sextets
+  ([a]
+   (concat (take 2 (octets->sextets a 0 0)) [64 64]))
+  ([a b]
+   (concat (take 3 (octets->sextets a b 0)) [64]))
+  ([a b c]
+   (->>
+    (map (fn ([a b i]
+              (bit-or (bit-shift-left a (- 8 i)) (bit-shift-right b i))))
+         (concat [0 a b c])
+         (concat [a b c 0])
+         [2 4 6 8])
+    (map #(bit-and 63 %))
+    )))
 
-(defn- sextets->octets [xs]
-  (->>
-   (map (fn [a b i]
-          (bit-or (bit-shift-left a i) (bit-shift-right b (- 6 i))))
-        xs
-        (rest xs)
-        [2 4 6])
-   (map #(bit-and 255 %))))
+(defn- sextets->octets
+  ([a b]
+   (take 1 (sextets->octets a b 0 0)))
+  ([a b c]
+   (take 2 (sextets->octets a b c 0)) )
+  ([a b c d]
+   (->>
+    (map (fn [a b i]
+           (bit-or (bit-shift-left a i) (bit-shift-right b (- 6 i))))
+         [a b c]
+         [b c d]
+         [2 4 6])
+    (map #(bit-and 255 %))
+    )))
 
-(defn encode [s]
-  (assert (zero? (mod (count s) 3)))
+(defn encode [input]
   (->>
-   s
-   (partition 3)
-   (mapcat octets->sextets)
+   input
+   (partition-all 3)
+   (mapcat #(apply octets->sextets %))
    (map #(nth char-encodings %))
    (apply str)))
 
-(defn decode [s]
-  (assert (zero? (mod (count s) 4)))
+(defn decode [input]
+  (assert (zero? (mod (count input) 4)))
   (->>
-   s
+   (clojure.string/replace input #"=+$" "")
    (map char->int-map)
-   ;(map assert)
-   (partition 4)
-   (mapcat sextets->octets)
+   (partition-all 4)
+   (mapcat #(apply sextets->octets %))
    (apply vector)
    ))

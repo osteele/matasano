@@ -15,10 +15,28 @@
  (base64/encode [0 0 0 1 0 0]) => "AAAAAQAA"
  (base64/encode [0 0 0 0 1 0]) => "AAAAAAEA"
  (base64/encode [0 0 0 0 0 1]) => "AAAAAAAB"
+ )
+
+(fact
+ "base64/encode should pad with =s"
+ (base64/encode [0]) => "AA=="
+ (base64/encode [1]) => "AQ=="
+ (base64/encode [4]) => "BA=="
+ (base64/encode [0 0]) => "AAA="
+ (base64/encode [1 0]) => "AQA="
+ (base64/encode [0 1]) => "AAE="
+ (base64/encode [4 0]) => "BAA="
+ (base64/encode [0 16]) => "ABA="
+ )
+
+(fact
+ "base64/encode should decode substrings from challenge string"
+ (base64/encode (read-hex "49")) => "SQ=="
+ (base64/encode (read-hex "4927")) => "SSc="
  (base64/encode (read-hex "49276d")) => "SSdt"
+ (base64/encode (read-hex "49276d20")) => "SSdtIA=="
+ (base64/encode (read-hex "49276d207b")) => "SSdtIHs="
  (base64/encode (read-hex "49276d207b96")) => "SSdtIHuW"
- (base64/encode (read-hex "49")) => (throws java.lang.AssertionError)
- (base64/encode (read-hex "49276d20")) => (throws java.lang.AssertionError)
  )
 
 (fact
@@ -35,4 +53,16 @@
  (base64/decode "AAAAAAAB") => [0 0 0 0 0 1]
  (base64/decode "SSdt") => (read-hex "49276d")
  (base64/decode "SSdtIHuW") => (read-hex "49276d207b96")
+ )
+
+(fact
+ "base64/decode should decode padded string"
+ (base64/decode "AA==") => [0]
+ (base64/decode "AQ==") => [1]
+ (base64/decode "BA==") => [4]
+ (base64/decode "AAA=") => [0 0]
+ (base64/decode "AQA=") => [1 0]
+ (base64/decode "AAE=") => [0 1]
+ (base64/decode "BAA=") => [4 0]
+ (base64/decode "ABA=") => [0 16]
  )

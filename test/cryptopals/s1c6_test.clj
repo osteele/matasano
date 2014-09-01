@@ -12,6 +12,5 @@
 
 (fact
  "break-xor-cypher should work on the challenge test"
- (let [input (base64/decode (clojure.string/replace (slurp "./data/s1c6.txt") #"\n" ""))
-       expected (slurp "./data/s1c6.out")]
-   (break-xor-cypher input) => expected))
+ (let [input (base64/decode (clojure.string/replace (slurp "./data/s1c6.txt") #"\n" ""))]
+   (break-xor-cypher input) => (slurp "./data/s1c6.out")))
