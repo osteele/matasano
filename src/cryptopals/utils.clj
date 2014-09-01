@@ -31,7 +31,8 @@
   (->>
    hexstr
    (re-seq #"..")
-   (map #(Integer/parseInt % 16))))
+   (map #(Integer/parseInt % 16))
+   byte-array))
 
 ; maps
 

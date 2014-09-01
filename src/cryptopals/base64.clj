@@ -27,8 +27,7 @@
          (concat [0 a b c])
          (concat [a b c 0])
          [2 4 6 8])
-    (map #(bit-and 63 %))
-    )))
+    (map (partial bit-and 63)))))
 
 (defn- sextets->octets
   ([a b]
@@ -42,12 +41,12 @@
          [a b c]
          [b c d]
          [2 4 6])
-    (map #(bit-and 255 %))
-    )))
+    (map (partial bit-and 255)))))
 
 (defn encode [input]
   (->>
    input
+   (map (partial bit-and 255))
    (partition-all 3)
    (mapcat #(apply octets->sextets %))
    (map #(nth char-encodings %))
@@ -57,9 +56,9 @@
   (let [input (string/replace input #"\s" "")]
     (assert (zero? (mod (count input) 4)))
     (->>
-     (clojure.string/replace input #"=+$" "")
+     (string/replace input #"=+$" "")
      (map char->int-map)
      (partition-all 4)
      (mapcat #(apply sextets->octets %))
      (apply vector)
-     )))
+     byte-array)))
