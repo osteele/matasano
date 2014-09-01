@@ -13,4 +13,4 @@
 (fact
  "break-xor-cypher should work on the challenge test"
  (let [input (base64/decode (slurp "./data/s1c6.txt"))]
-   (break-xor-cypher input) => (slurp "./data/s1c6.out")))
+   (break-xor-cypher input) => (slurp "./data/s1c6-plain.txt")))
